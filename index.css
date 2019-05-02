@@ -1,0 +1,47 @@
+/*
+     Overwrite the default Materialize Light theme
+  */
+body, html {
+    background-color: #191a1a !important;
+    color: #e7e6e5 !important;
+}
+
+.autocomplete {
+    color: #e7e6e5;
+}
+
+.select-dropdown {
+    color: #e7e6e5;
+}
+
+.dropdown-content {
+    background-color: #191a1a !important;
+}
+
+tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+
+
+.logo {
+    border-radius: 20px;
+    vertical-align: middle;
+}
+
+.banner {
+    font-size: 80px;
+    font-family: Helvetica,serif;
+}
+
+#searchForm {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 800px;
+}
+
+#results {
+    margin: 30px auto;
+    width: 100%;
+    max-width: 1000px;
+}

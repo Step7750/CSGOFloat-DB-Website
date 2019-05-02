@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSGOFloat Database</title>
+
+    <script
+            src="https://code.jquery.com/jquery-3.4.0.min.js"
+            integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg="
+            crossorigin="anonymous"></script>
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="assets/nouislider.css">
+    <link rel="stylesheet" href="index.css">
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <script src="assets/nouislider.min.js"></script>
+    <script src="index.js"></script>
+</head>
+<body>
+    <div style="text-align: center">
+        <div class="banner">
+            <img src="assets/icon.svg" width="100" class="logo">
+            <span style="vertical-align: middle;">DB</span>
+        </div>
+
+        <div id="searchForm">
+            <div class="row">
+                <div class="input-field col s6">
+                    <select id="weaponSelect"></select>
+                    <label>Select a Weapon</label>
+                    <!--<input type="text" id="weapons-autocomplete" class="autocomplete">-->
+                    <!--<label for="weapons-autocomplete">Weapon</label>-->
+                </div>
+                <div class="input-field col s6">
+                    <select id="paintSelect" disabled></select>
+                    <label>Select a Skin</label>
+                    <!--<input disabled type="text" id="paint-autocomplete" class="autocomplete">-->
+                    <!--<label for="paint-autocomplete">Skin</label>-->
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="row">
+                <div class="col s12" style="padding: 0;">
+                    <div id="float-slider"></div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 75px;">
+                <div class="col s12">
+                    Sort By:
+                    <label>
+                        <input name="sort" type="radio" checked  value="1"/>
+                        <span>Low Float</span>
+                    </label>
+                    <label>
+                        <input name="sort" type="radio"  value="-1"/>
+                        <span>High Float</span>
+                    </label>
+                </div>
+            </div>
+            <a class="waves-effect waves-light btn-large" href="javascript:search()" id="searchButton">Search</a>
+            <div class="progress" id="searchLoading" style="display: none">
+                <div class="indeterminate"></div>
+            </div>
+        </div>
+        <div id="results" style="display: none">
+            <table>
+                <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Rarity</th>
+                    <th>Float Value</th>
+                    <th>Seed</th>
+                    <th>Link</th>
+                    <th>Inspect</th>
+                </tr>
+                </thead>
+
+                <tbody id="results-body">
+                <tr>
+                    <td>1</td>
+                    <td>340958445</td>
+                    <td>StatTrak AK-47 | Hydroponic</td>
+                    <td>Covert</td>
+                    <td>0.003248843294</td>
+                    <td>234</td>
+                    <td><a href="steamcommunity.com">Profile</a></td>
+                    <td><a href="steamcommunity.com">Inspect</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
