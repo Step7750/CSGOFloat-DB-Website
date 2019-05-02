@@ -12,6 +12,43 @@ function generateDropdownHtml(text, data) {
     return html;
 }
 
+function addStickerInputs(amt) {
+    const parent = $("#stickers");
+    parent.empty();
+
+    const stickersDropdown = {};
+    for (const stickerIndex of Object.keys(items.stickers)) {
+        stickersDropdown[items.stickers[stickerIndex]] = null;
+    }
+
+    for (let i = 0; i < amt; i++) {
+        const d = $(`
+        <div class="input-field col s4 ${i === 4 ? 'offset-s3' : ''}">
+            <input type="text" id="sticker1-input" class="autocomplete sticker-autocomplete" autocomplete="off">
+            <label for="sticker1-input">Sticker</label>
+        </div>
+        <div class="input-field col s2">
+            <select>
+              <option value="" selected>Any Slot</option>
+              <option value="1">Slot 1</option>
+              <option value="2">Slot 2</option>
+              <option value="3">Slot 3</option>
+              <option value="3">Slot 4</option>
+              <option value="3">Slot 5</option>
+            </select>
+        </div>
+        `);
+
+        parent.append(d);
+
+        d.find('input').autocomplete({
+            data: stickersDropdown,
+            limit: 7,
+        });
+        d.find('select').formSelect();
+    }
+}
+
 $(document).ready(async function(){
     $('body').append('<select class="browser-default" style="position:absolute;visibility:hidden" id="fix-scroll"></select>'); //this is the hack
     $('#fix-scoll').formSelect();
@@ -27,6 +64,8 @@ $(document).ready(async function(){
 
     $("#weaponSelect").html(generateDropdownHtml("Any Weapon", weaponsDropdown));
     $("#weaponSelect").formSelect();
+    $("#paintSelect").formSelect();
+    $("#qualitySelect").formSelect();
 
     noUiSlider.create(floatSlider, {
         start: [0, 1],
@@ -52,6 +91,8 @@ $(document).ready(async function(){
         }
     });
 
+    addStickerInputs(5);
+
     $("#weaponSelect").on('change', function() {
         paintIndex = undefined;
         defIndex = this.value;
@@ -71,11 +112,14 @@ $(document).ready(async function(){
         $("#paintSelect").prop('disabled', false);
         $("#paintSelect").html(generateDropdownHtml("Any Skin", paintsDropdown));
         $("#paintSelect").formSelect();
+
+        // Initialize the stickers
+        addStickerInputs(items.weapons[defIndex].stickerAmount);
     });
 
     $("#paintSelect").on('change', function () {
         paintIndex = this.value;
-        if (paintIndex ==-1) {
+        if (paintIndex == -1) {
             floatSlider.noUiSlider.set([0, 1]);
         } else {
             const paint = items.weapons[defIndex].paints[paintIndex];

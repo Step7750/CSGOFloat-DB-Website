@@ -29,15 +29,34 @@
 
         <div id="searchForm">
             <div class="row">
-                <div class="input-field col s6">
+                <div class="input-field col s4">
                     <select id="weaponSelect"></select>
                     <label>Select a Weapon</label>
                     <!--<input type="text" id="weapons-autocomplete" class="autocomplete">-->
                     <!--<label for="weapons-autocomplete">Weapon</label>-->
                 </div>
-                <div class="input-field col s6">
-                    <select id="paintSelect" disabled></select>
+                <div class="input-field col s4">
+                    <select id="paintSelect" disabled>
+                        <option value="-1">Any Skin</option>
+                    </select>
                     <label>Select a Skin</label>
+                    <!--<input disabled type="text" id="paint-autocomplete" class="autocomplete">-->
+                    <!--<label for="paint-autocomplete">Skin</label>-->
+                </div>
+                <div class="input-field col s2">
+                    <input placeholder="Any" type="number" id="aaa" class="validate" onKeyPress="if (this.value.length === 3) return false;">
+                    <label>Paint Seed</label>
+                    <!--<input type="text" id="weapons-autocomplete" class="autocomplete">-->
+                    <!--<label for="weapons-autocomplete">Weapon</label>-->
+                </div>
+                <div class="input-field col s2">
+                    <select id="qualitySelect">
+                        <option value="-1">Any</option>
+                        <option value="0">Normal</option>
+                        <option value="9">Stattrak</option>
+                        <option value="12">Souvenir</option>
+                    </select>
+                    <label>Quality</label>
                     <!--<input disabled type="text" id="paint-autocomplete" class="autocomplete">-->
                     <!--<label for="paint-autocomplete">Skin</label>-->
                 </div>
@@ -59,6 +78,24 @@
                         <input name="sort" type="radio"  value="-1"/>
                         <span>High Float</span>
                     </label>
+                </div>
+            </div>
+            <div class="row" id="stickers">
+                <div class="input-field col s3">
+                    <input type="text" id="sticker1-input" class="autocomplete sticker-autocomplete">
+                    <label for="sticker1-input">Sticker</label>
+                </div>
+                <div class="input-field col s3">
+                    <input type="text" id="sticker2-input" class="autocomplete sticker-autocomplete">
+                    <label for="sticker2-input">Sticker</label>
+                </div>
+                <div class="input-field col s3">
+                    <input type="text" id="sticker3-input" class="autocomplete sticker-autocomplete">
+                    <label for="sticker3-input">Sticker</label>
+                </div>
+                <div class="input-field col s3">
+                    <input type="text" id="sticker4-input" class="autocomplete sticker-autocomplete">
+                    <label for="sticker4-input">Sticker</label>
                 </div>
             </div>
             <a class="waves-effect waves-light btn-large" href="javascript:search()" id="searchButton">Search</a>
