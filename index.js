@@ -55,7 +55,7 @@ $(document).ready(async function(){
     $('#fix-scroll').formSelect();
 
     floatSlider = document.getElementById('float-slider');
-    const data = await fetch('https://api.db.csgofloat.com/items');
+    const data = await fetch('https://dbapi.csgofloat.com/items');
     items = await data.json();
 
     const weaponsDropdown = {};
@@ -284,7 +284,7 @@ async function search() {
         .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
         .join('&');
 
-    const data = await fetch(`https://api.db.csgofloat.com/search?${queryString}`);
+    const data = await fetch(`https://dbapi.csgofloat.com/search?${queryString}`);
     const results = await data.json();
 
     const tableHtml = getTableHtml(results);
