@@ -1,13 +1,14 @@
 let defIndex, paintIndex, floatSlider;
 let items;
 
-function generateDropdownHtml(text, data) {
+function generateDropdownHtml(text, data, vanilla) {
     let html = '';
     html += `<option value="-1" selected>${text}</option>`;
-    for (const key of Object.keys(data)) {
-        html += `
-                    <option value="${data[key]}">${key}</option>
-                `;
+    if (vanilla) {
+        html += `<option value="0">Vanilla</option>`
+    }
+    for (const key of Object.keys(data).sort()) {
+        html += `<option value="${data[key]}">${key}</option>`;
     }
     return html;
 }
@@ -24,17 +25,17 @@ function addStickerInputs(amt) {
     for (let i = 0; i < amt; i++) {
         const d = $(`
         <div class="input-field col s4 ${i === 4 ? 'offset-s3' : ''}">
-            <input type="text" id="sticker1-input" class="autocomplete sticker-autocomplete" autocomplete="off">
-            <label for="sticker1-input">Sticker</label>
+            <input type="text" id="sticker${i}-input" class="autocomplete sticker-autocomplete" autocomplete="off">
+            <label for="sticker${i}-input">Sticker</label>
         </div>
         <div class="input-field col s2">
-            <select>
+            <select id="sticker${i}-slot">
               <option value="" selected>Any Slot</option>
               <option value="1">Slot 1</option>
               <option value="2">Slot 2</option>
               <option value="3">Slot 3</option>
-              <option value="3">Slot 4</option>
-              <option value="3">Slot 5</option>
+              <option value="4">Slot 4</option>
+              <option value="5">Slot 5</option>
             </select>
         </div>
         `);
@@ -43,7 +44,7 @@ function addStickerInputs(amt) {
 
         d.find('input').autocomplete({
             data: stickersDropdown,
-            limit: 7,
+            limit: 12,
         });
         d.find('select').formSelect();
     }
@@ -51,7 +52,7 @@ function addStickerInputs(amt) {
 
 $(document).ready(async function(){
     $('body').append('<select class="browser-default" style="position:absolute;visibility:hidden" id="fix-scroll"></select>'); //this is the hack
-    $('#fix-scoll').formSelect();
+    $('#fix-scroll').formSelect();
 
     floatSlider = document.getElementById('float-slider');
     const data = await fetch('http://localhost:3000/items');
@@ -110,7 +111,7 @@ $(document).ready(async function(){
             paintsDropdown[items.weapons[defIndex].paints[paintIndex].name] = paintIndex;
         }
         $("#paintSelect").prop('disabled', false);
-        $("#paintSelect").html(generateDropdownHtml("Any Skin", paintsDropdown));
+        $("#paintSelect").html(generateDropdownHtml("Any Skin", paintsDropdown, defIndex >= 500));
         $("#paintSelect").formSelect();
 
         // Initialize the stickers
@@ -121,6 +122,8 @@ $(document).ready(async function(){
         paintIndex = this.value;
         if (paintIndex == -1) {
             floatSlider.noUiSlider.set([0, 1]);
+        } else if (paintIndex == 0) {
+            floatSlider.noUiSlider.set([0.06, 0.80]);
         } else {
             const paint = items.weapons[defIndex].paints[paintIndex];
             floatSlider.noUiSlider.set([paint.min, paint.max]);
@@ -213,6 +216,36 @@ function getTableHtml(rows) {
     return html;
 }
 
+function getStickers() {
+    const stickers = [];
+
+    for (let i = 0; i < 5; i++) {
+        const stickerInput = $(`#sticker${i}-input`);
+
+        if (!stickerInput.length) continue;
+
+        const slot = $(`#sticker${i}-slot`).val();
+
+        const stickerName = stickerInput.val();
+
+        // find sticker id
+        const stickerId = Object.keys(items.stickers).find((id) => items.stickers[id] === stickerName);
+
+        if (!stickerId) continue;
+
+        const sticker = {
+            i: stickerId
+        };
+        if (slot) {
+            sticker.s = parseInt(slot)-1;
+        }
+
+        stickers.push(sticker);
+    }
+
+    return stickers;
+}
+
 async function search() {
     $("#searchLoading").show();
     $("#searchButton").addClass('disabled');
@@ -221,8 +254,32 @@ async function search() {
         defIndex: defIndex == -1 ? '' : defIndex,
         paintIndex: paintIndex == -1 ? '' : paintIndex,
         order: $('input[name=sort]:checked').val(),
+        paintSeed: $("#paintSeed").val(),
     };
 
+    console.log(floatSlider.noUiSlider.get());
+
+    const [min, max] = floatSlider.noUiSlider.get();
+
+    params.min = min;
+    params.max = max;
+
+    const qualitySelection = parseInt($("#qualitySelect").val());
+    if (qualitySelection > -1) {
+        if (qualitySelection === 0) {
+            params.stattrak = false;
+            params.souvenir = false;
+        } else if (qualitySelection === 9) {
+            params.stattrak = true;
+        } else if (qualitySelection === 12) {
+            params.souvenir = true;
+        }
+    }
+
+    const stickers = getStickers();
+    if (stickers.length > 0) {
+        params.stickers = JSON.stringify(stickers);
+    }
     const queryString = Object.keys(params)
         .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
         .join('&');
@@ -235,4 +292,9 @@ async function search() {
     $("#results").show();
     $("#searchLoading").hide();
     $("#searchButton").removeClass('disabled');
+
+    $('html, body').animate({
+        scrollTop: $("#results").offset().top
+    }, 500);
+
 }
