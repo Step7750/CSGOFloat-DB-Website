@@ -1,6 +1,17 @@
 let defIndex, paintIndex, floatSlider;
 let items;
 
+// https://stackoverflow.com/a/46431916
+const groupBy = (items, key) => items.reduce((result, item) => ({
+        ...result,
+        [item[key]]: [
+            ...(result[item[key]] || []),
+            item,
+        ],
+    }),
+    {},
+);
+
 function generateDropdownHtml(text, data, vanilla) {
     let html = '';
     html += `<option value="-1" selected>${text}</option>`;
@@ -10,6 +21,35 @@ function generateDropdownHtml(text, data, vanilla) {
     for (const key of Object.keys(data).sort()) {
         html += `<option value="${data[key]}">${key}</option>`;
     }
+    return html;
+}
+
+function generateWeaponsDropdownHtml(text, data) {
+    let html = '';
+
+    html += `<option value="-1" selected>${text}</option>`;
+
+    const weapons = [];
+    for (const defIndex of Object.keys(data)) {
+        weapons.push(Object.assign({
+            defIndex
+        }, data[defIndex]))
+    }
+    const grouped = groupBy(weapons, 'type');
+
+    for (const groupName of Object.keys(grouped)) {
+        grouped[groupName].sort((a, b) => a.name.localeCompare(b.name));
+
+        html += `<optgroup label=${groupName}>`;
+
+        for (const item of grouped[groupName]) {
+            html += `<option value="${item.defIndex}">${item.name}</option>`;
+        }
+
+        html += `</optgroup>`;
+    }
+    console.log(grouped);
+
     return html;
 }
 
@@ -55,7 +95,7 @@ $(document).ready(async function(){
     $('#fix-scroll').formSelect();
 
     floatSlider = document.getElementById('float-slider');
-    const data = await fetch('https://dbapi.csgofloat.com/items');
+    const data = await fetch('http://localhost:3000/items');
     items = await data.json();
 
     const weaponsDropdown = {};
@@ -63,7 +103,7 @@ $(document).ready(async function(){
         weaponsDropdown[items.weapons[defIndex].name] = defIndex;
     }
 
-    $("#weaponSelect").html(generateDropdownHtml("Any Weapon", weaponsDropdown));
+    $("#weaponSelect").html(generateWeaponsDropdownHtml("Any Weapon", items.weapons));
     $("#weaponSelect").formSelect();
     $("#paintSelect").formSelect();
     $("#qualitySelect").formSelect();

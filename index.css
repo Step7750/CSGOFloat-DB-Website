@@ -18,6 +18,19 @@ body, html {
     background-color: #191a1a !important;
 }
 
+.optgroup > span {
+    color: #e7e6e5 !important;
+}
+
+.dropdown-content > li {
+    min-height: 36px !important;
+}
+
+.dropdown-content > li > span {
+    padding-top: 7px !important;
+    padding-bottom: 7px !important;
+}
+
 tr {
     border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
