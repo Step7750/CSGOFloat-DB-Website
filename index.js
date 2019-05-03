@@ -119,6 +119,8 @@ $(document).ready(async function(){
     });
 
     $("#paintSelect").on('change', function () {
+        // TODO: Allow doppler filtering
+
         paintIndex = this.value;
         if (paintIndex == -1) {
             floatSlider.noUiSlider.set([0, 1]);
@@ -183,14 +185,46 @@ function getItemName(defIndex, paintIndex, isStattrak, isSouvenir) {
 }
 
 const rarities = {
-    0: "Stock",
-    1: "Consumer",
-    2: "Industrial",
-    3: "Mil-Spec",
-    4: "Restricted",
-    5: "Classified",
-    6: "Covert",
-    7: "Contraband",
+    0: {
+        name: "Stock",
+        bg: "#6a6156",
+        text: "#262a2f"
+    },
+    1: {
+        name: "Consumer",
+        bg: "#b0c3d9",
+        text: "#262a2f"
+    },
+    2: {
+        name: "Industrial",
+        bg: "#5e98d9",
+        text: "#182533"
+    },
+    3: {
+        name: "Mil-Spec",
+        bg: "#4b69ff",
+        text: "white"
+    },
+    4: {
+        name: "Restricted",
+        bg: "#8847ff",
+        text: "white"
+    },
+    5: {
+        name: "Classified",
+        bg: "#d32ce6",
+        text: "white"
+    },
+    6: {
+        name: "Covert",
+        bg: "#eb4b4b",
+        text: "white"
+    },
+    7: {
+        name: "Contraband",
+        bg: "#e4ae39",
+        text: "#503d15"
+    },
 };
 
 function getTableHtml(rows) {
@@ -198,13 +232,18 @@ function getTableHtml(rows) {
     for (let rank = 0; rank < rows.length; rank++) {
         const row = rows[rank];
         const properties = extractProperties(row.props);
+        const rarity = rarities[properties.rarity];
 
         html += `
                 <tr>
                     <td>${rank+1}</td>
                     <td>${row.a}</td>
                     <td>${getItemName(row.defIndex, row.paintIndex, row.stattrak, row.souvenir)}</td>
-                    <td>${rarities[properties.rarity]}</td>
+                    <td>
+                        <span style="background-color: ${rarity.bg}; padding: 5px; border-radius: 5px; color: ${rarity.text}">
+                        ${rarity.name}
+                        </span>
+                    </td>
                     <td>${row.floatvalue.toFixed(14)}</td>
                     <td>${row.paintseed}</td>
                     <td><a href="${generateLink(row)}" target="_blank">${row.s === "0" ? "Market" : "Profile"}</a></td>
