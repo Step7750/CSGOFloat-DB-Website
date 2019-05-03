@@ -26,6 +26,11 @@ tr {
     color: #e7e6e5 !important;
 }
 
+.material-tooltip {
+    white-space: pre;
+}
+
+
 .logo {
     border-radius: 20px;
     vertical-align: middle;

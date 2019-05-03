@@ -160,7 +160,20 @@ function extractProperties(prop) {
     }
 }
 
-function getItemName(defIndex, paintIndex, isStattrak, isSouvenir) {
+const floatRanges = {
+    'FN': [0.0, 0.07],
+    'MW': [0.07, 0.15],
+    'FT': [0.15, 0.38],
+    'WW': [0.38, 0.45],
+    'BS': [0.45, 1.00]
+};
+
+function getWearAbbreviation(floatvalue) {
+    return Object.keys(floatRanges).find((abbrev) => floatvalue >= floatRanges[abbrev][0] && floatvalue < floatRanges[abbrev][1]);
+}
+
+
+function getItemName(defIndex, paintIndex, floatvalue, isStattrak, isSouvenir) {
     let name = '';
 
     if (defIndex >= 500) {
@@ -179,6 +192,7 @@ function getItemName(defIndex, paintIndex, isStattrak, isSouvenir) {
 
     if (paintIndex > 0) {
         name += ' | ' + items.weapons[defIndex].paints[paintIndex].name;
+        name += ` (${getWearAbbreviation(floatvalue)})`;
     }
 
     return name;
@@ -227,18 +241,27 @@ const rarities = {
     },
 };
 
+function getStickerNames(stickers) {
+    const names = [];
+    for (const sticker of stickers || []) {
+        names.push(items.stickers[sticker.i] + ` (${sticker.s+1})`);
+    }
+    return names;
+}
+
 function getTableHtml(rows) {
     let html = '';
     for (let rank = 0; rank < rows.length; rank++) {
         const row = rows[rank];
         const properties = extractProperties(row.props);
         const rarity = rarities[properties.rarity];
+        const hasStickers = (row.stickers || []).length > 0;
 
         html += `
                 <tr>
                     <td>${rank+1}</td>
                     <td>${row.a}</td>
-                    <td>${getItemName(row.defIndex, row.paintIndex, row.stattrak, row.souvenir)}</td>
+                    <td>${getItemName(row.defIndex, row.paintIndex, row.floatvalue, row.stattrak, row.souvenir)}</td>
                     <td>
                         <span style="background-color: ${rarity.bg}; padding: 5px; border-radius: 5px; color: ${rarity.text}">
                         ${rarity.name}
@@ -246,6 +269,10 @@ function getTableHtml(rows) {
                     </td>
                     <td>${row.floatvalue.toFixed(14)}</td>
                     <td>${row.paintseed}</td>
+                    <td><a class="${hasStickers ? "tooltipped" : ""}" data-position="top" data-tooltip="${getStickerNames(row.stickers).join('\n')}">
+                        ${(row.stickers || []).length > 0 ? "Show" : ""}
+                        </a>
+                    </td>
                     <td><a href="${generateLink(row)}" target="_blank">${row.s === "0" ? "Market" : "Profile"}</a></td>
                     <td><a href="${generateInspectURL(row)}">Inspect</a></td>
                 </tr>
@@ -296,8 +323,6 @@ async function search() {
         paintSeed: $("#paintSeed").val(),
     };
 
-    console.log(floatSlider.noUiSlider.get());
-
     const [min, max] = floatSlider.noUiSlider.get();
 
     params.min = min;
@@ -328,6 +353,12 @@ async function search() {
 
     const tableHtml = getTableHtml(results);
     $("#results-body").html(tableHtml);
+
+
+    $("#results-body").find(".tooltipped").each(function () {
+        $(this).tooltip();
+    });
+
     $("#results").show();
     $("#searchLoading").hide();
     $("#searchButton").removeClass('disabled');

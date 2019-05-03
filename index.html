@@ -32,22 +32,16 @@
                 <div class="input-field col s4">
                     <select id="weaponSelect"></select>
                     <label>Select a Weapon</label>
-                    <!--<input type="text" id="weapons-autocomplete" class="autocomplete">-->
-                    <!--<label for="weapons-autocomplete">Weapon</label>-->
                 </div>
                 <div class="input-field col s4">
                     <select id="paintSelect" disabled>
                         <option value="-1">Any Skin</option>
                     </select>
                     <label>Select a Skin</label>
-                    <!--<input disabled type="text" id="paint-autocomplete" class="autocomplete">-->
-                    <!--<label for="paint-autocomplete">Skin</label>-->
                 </div>
                 <div class="input-field col s2">
                     <input placeholder="Any" type="number" id="paintSeed" class="validate" onKeyPress="if (this.value.length === 3) return false;">
                     <label>Paint Seed</label>
-                    <!--<input type="text" id="weapons-autocomplete" class="autocomplete">-->
-                    <!--<label for="weapons-autocomplete">Weapon</label>-->
                 </div>
                 <div class="input-field col s2">
                     <select id="qualitySelect">
@@ -56,9 +50,7 @@
                         <option value="9">Stattrak</option>
                         <option value="12">Souvenir</option>
                     </select>
-                    <label>Quality</label>
-                    <!--<input disabled type="text" id="paint-autocomplete" class="autocomplete">-->
-                    <!--<label for="paint-autocomplete">Skin</label>-->
+                    <label>Category</label>
                 </div>
             </div>
             <div class="divider"></div>
@@ -113,23 +105,13 @@
                     <th>Rarity</th>
                     <th>Float Value</th>
                     <th>Seed</th>
+                    <th>Stickers</th>
                     <th>Link</th>
                     <th>Inspect</th>
                 </tr>
                 </thead>
 
-                <tbody id="results-body">
-                <tr>
-                    <td>1</td>
-                    <td>340958445</td>
-                    <td>StatTrak AK-47 | Hydroponic</td>
-                    <td>Covert</td>
-                    <td>0.003248843294</td>
-                    <td>234</td>
-                    <td><a href="steamcommunity.com">Profile</a></td>
-                    <td><a href="steamcommunity.com">Inspect</a></td>
-                </tr>
-                </tbody>
+                <tbody id="results-body"></tbody>
             </table>
         </div>
     </div>
