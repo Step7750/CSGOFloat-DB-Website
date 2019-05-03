@@ -95,7 +95,7 @@ $(document).ready(async function(){
     $('#fix-scroll').formSelect();
 
     floatSlider = document.getElementById('float-slider');
-    const data = await fetch('http://localhost:3000/items');
+    const data = await fetch('https://dbapi.csgofloat.com/items');
     items = await data.json();
 
     const weaponsDropdown = {};
