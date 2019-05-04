@@ -1,4 +1,4 @@
-const basePath = 'http://localhost:3000';
+const basePath = 'https://dbapi.csgofloat.com';
 
 let defIndex, paintIndex, floatSlider;
 let items;
