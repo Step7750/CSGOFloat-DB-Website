@@ -198,8 +198,17 @@ $(document).ready(async function(){
     floatSlider.noUiSlider.on('slide', (values) => {
         $('#minFloat').val(values[0]);
         $('#maxFloat').val(values[1]);
-    })
+    });
+
+    if (location.search) {
+        searchQuery(location.search.substring(1));
+    }
 });
+
+window.onpopstate = function(event) {
+    searchQuery(location.search.substring(1));
+};
+
 
 function generateInspectURL(item) {
     if (item.s === '0') return `steam://rungame/730/76561202255233023/+csgo_econ_action_preview M${item.m}A${item.a}D${item.d}`;
@@ -285,7 +294,9 @@ function getItemName(defIndex, paintIndex, floatvalue, isStattrak, isSouvenir, a
             name = name.match(/(.*) \(/)[1];
         }
 
-        name += ` (${getWearName(floatvalue, abbreviation)})`;
+        if (floatvalue) {
+            name += ` (${getWearName(floatvalue, abbreviation)})`;
+        }
     }
 
     return name;
@@ -406,17 +417,12 @@ function getStickers() {
 }
 
 async function search() {
-    $("#searchLoading").show();
-    $("#searchButton").addClass('disabled');
-
-    const params = {
+    let params = {
         defIndex: defIndex == -1 ? '' : defIndex,
         paintIndex: paintIndex == -1 ? '' : paintIndex,
         order: $('input[name=sort]:checked').val(),
         paintSeed: $("#paintSeed").val(),
     };
-
-    const [min, max] = floatSlider.noUiSlider.get();
 
     params.min = $('#minFloat').val();
     params.max = $('#maxFloat').val();
@@ -437,11 +443,36 @@ async function search() {
     if (stickers.length > 0) {
         params.stickers = JSON.stringify(stickers);
     }
+
+    // Add a user friendly item name
+    if (params.defIndex) {
+        params.name = getItemName(params.defIndex, params.paintIndex, false, !!params.stattrak, !!params.souvenir, false)
+            .replace(/ \| /g, '-').replace(/ /g, '-');
+    }
+
+    // Remove empty keys (can't just do !! since 0)
+    params = Object.keys(params).reduce((result, key) => {
+        if (key in params && params[key] !== undefined && params[key] !== null && params[key] !== '') {
+            result[key] = params[key];
+        }
+
+        return result;
+    }, {});
+
     const queryString = Object.keys(params)
         .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
         .join('&');
 
-    const data = await fetch(`${basePath}/search?${queryString}`);
+    history.pushState(params, '', '?' + queryString);
+
+    searchQuery(queryString);
+}
+
+async function searchQuery(query) {
+    $("#searchLoading").show();
+    $("#searchButton").addClass('disabled');
+
+    const data = await fetch(`${basePath}/search?${query}`);
     const results = await data.json();
 
     const tableHtml = getTableHtml(results);
@@ -459,5 +490,4 @@ async function search() {
     $('html, body').animate({
         scrollTop: $("#results").offset().top
     }, 500);
-
 }
