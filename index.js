@@ -65,7 +65,7 @@ function addStickerInputs(amt) {
     }
 
     for (let i = 0; i < amt; i++) {
-        const d = $(`
+        let d = `
         <div class="input-field col s4 ${i === 4 ? 'offset-s3' : ''}">
             <input type="text" id="sticker${i}-input" class="autocomplete sticker-autocomplete" autocomplete="off">
             <label for="sticker${i}-input">Sticker</label>
@@ -73,14 +73,15 @@ function addStickerInputs(amt) {
         <div class="input-field col s2">
             <select id="sticker${i}-slot">
               <option value="" selected>Any Slot</option>
-              <option value="1">Slot 1</option>
-              <option value="2">Slot 2</option>
-              <option value="3">Slot 3</option>
-              <option value="4">Slot 4</option>
-              <option value="5">Slot 5</option>
-            </select>
-        </div>
-        `);
+        `;
+
+        for (let j = 0; j < amt; j++) {
+            d += `<option value="${j+1}">Slot ${j+1}</option>`;
+        }
+
+        d += '</select></div>';
+
+        d = $(d);
 
         parent.append(d);
 
