@@ -449,7 +449,7 @@ async function search() {
 
     // Add a user friendly item name
     if (params.defIndex) {
-        params.name = getItemName(params.defIndex, params.paintIndex, false, !!params.stattrak, !!params.souvenir, false)
+        params.name = getItemName(params.defIndex, params.paintIndex, false, !!params.stattrak, !!params.souvenir, true)
             .replace(/ \| /g, '-').replace(/ /g, '-');
     }
 
