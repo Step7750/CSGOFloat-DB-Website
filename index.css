@@ -4,6 +4,7 @@
 body, html {
     background-color: #191a1a !important;
     color: #e7e6e5 !important;
+    height: 100%;
 }
 
 .autocomplete {
@@ -16,6 +17,7 @@ body, html {
 
 .dropdown-content {
     background-color: #191a1a !important;
+    backface-visibility: hidden !important;
 }
 
 .optgroup > span {
