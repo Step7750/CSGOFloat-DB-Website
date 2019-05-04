@@ -1,4 +1,4 @@
-const basePath = 'https://dbapi.csgofloat.com';
+const basePath = 'http://localhost:3000';
 
 let defIndex, paintIndex, floatSlider;
 let items;
@@ -99,9 +99,6 @@ function setFloatMinMax(min, max) {
 }
 
 $(document).ready(async function(){
-    $('body').append('<select class="browser-default" style="position:absolute;visibility:hidden" id="fix-scroll"></select>'); //this is the hack
-    $('#fix-scroll').formSelect();
-
     floatSlider = document.getElementById('float-slider');
     const data = await fetch(`${basePath}/items`);
     items = await data.json();
@@ -211,7 +208,7 @@ function generateInspectURL(item) {
 
 function generateLink(item) {
     if (item.s === '0') {
-        return `https://steamcommunity.com/market/search?q=${getItemName(item.defIndex, item.paintIndex, item.stattrak, item.souvenir)}`;
+        return `https://steamcommunity.com/market/listings/730/${getItemName(item.defIndex, item.paintIndex, item.floatvalue, item.stattrak, item.souvenir, false)}`;
     } else {
         return `https://steamcommunity.com/profiles/${item.s}/inventory/#730_2_${item.a}`;
     }
@@ -232,19 +229,38 @@ function extractProperties(prop) {
 }
 
 const floatRanges = {
-    'FN': [0.0, 0.07],
-    'MW': [0.07, 0.15],
-    'FT': [0.15, 0.38],
-    'WW': [0.38, 0.45],
-    'BS': [0.45, 1.00]
+    'Factory New': {
+        range: [0.0, 0.07],
+        a: 'FN',
+    },
+    'Minimal Wear': {
+        range: [0.07, 0.15],
+        a: 'MW',
+    },
+    'Field-Tested': {
+        range: [0.15, 0.38],
+        a: 'FT',
+    },
+    'Well-Worn': {
+        range: [0.38, 0.45],
+        a: 'WW',
+    },
+    'Battle-Scarred': {
+        range: [0.45, 1.00],
+        a: 'BS',
+    }
 };
 
-function getWearAbbreviation(floatvalue) {
-    return Object.keys(floatRanges).find((abbrev) => floatvalue >= floatRanges[abbrev][0] && floatvalue < floatRanges[abbrev][1]);
+function getWearName(floatvalue, abbreviation) {
+    const fullName = Object.keys(floatRanges).find((name) => floatvalue >= floatRanges[name].range[0] && floatvalue < floatRanges[name].range[1]);
+    if (abbreviation) {
+        return floatRanges[fullName].a;
+    } else {
+        return fullName;
+    }
 }
 
-
-function getItemName(defIndex, paintIndex, floatvalue, isStattrak, isSouvenir) {
+function getItemName(defIndex, paintIndex, floatvalue, isStattrak, isSouvenir, abbreviation) {
     let name = '';
 
     if (defIndex >= 500) {
@@ -263,7 +279,13 @@ function getItemName(defIndex, paintIndex, floatvalue, isStattrak, isSouvenir) {
 
     if (paintIndex > 0) {
         name += ' | ' + items.weapons[defIndex].paints[paintIndex].name;
-        name += ` (${getWearAbbreviation(floatvalue)})`;
+
+        if (!abbreviation && name.indexOf('Doppler') > -1) {
+            // remove the phase
+            name = name.match(/(.*) \(/)[1];
+        }
+
+        name += ` (${getWearName(floatvalue, abbreviation)})`;
     }
 
     return name;
@@ -332,7 +354,7 @@ function getTableHtml(rows) {
                 <tr>
                     <td>${rank+1}</td>
                     <td>${row.a}</td>
-                    <td>${getItemName(row.defIndex, row.paintIndex, row.floatvalue, row.stattrak, row.souvenir)}</td>
+                    <td>${getItemName(row.defIndex, row.paintIndex, row.floatvalue, row.stattrak, row.souvenir, true)}</td>
                     <td>
                         <span style="background-color: ${rarity.bg}; padding: 5px; border-radius: 5px; color: ${rarity.text}">
                         ${rarity.name}
