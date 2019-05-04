@@ -292,7 +292,9 @@ function getItemName(defIndex, paintIndex, floatvalue, isStattrak, isSouvenir, a
 
         if (!abbreviation && name.indexOf('Doppler') > -1) {
             // remove the phase
-            name = name.match(/(.*) \(/)[1];
+            const m = name.match(/(.*) \(/);
+
+            name = (m && m[1]) || name;
         }
 
         if (floatvalue) {
