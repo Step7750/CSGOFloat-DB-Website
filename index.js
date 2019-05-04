@@ -1,3 +1,5 @@
+const basePath = 'https://dbapi.csgofloat.com';
+
 let defIndex, paintIndex, floatSlider;
 let items;
 
@@ -90,12 +92,18 @@ function addStickerInputs(amt) {
     }
 }
 
+function setFloatMinMax(min, max) {
+    floatSlider.noUiSlider.set([min, max]);
+    $('#minFloat').val(min.toFixed(2));
+    $('#maxFloat').val(max.toFixed(2));
+}
+
 $(document).ready(async function(){
     $('body').append('<select class="browser-default" style="position:absolute;visibility:hidden" id="fix-scroll"></select>'); //this is the hack
     $('#fix-scroll').formSelect();
 
     floatSlider = document.getElementById('float-slider');
-    const data = await fetch('https://dbapi.csgofloat.com/items');
+    const data = await fetch(`${basePath}/items`);
     items = await data.json();
 
     const weaponsDropdown = {};
@@ -111,7 +119,7 @@ $(document).ready(async function(){
     noUiSlider.create(floatSlider, {
         start: [0, 1],
         connect: true,
-        step: 0.01,
+        step: 0.001,
         orientation: 'horizontal', // 'horizontal' or 'vertical'
         range: {
             'min': 0,
@@ -163,14 +171,37 @@ $(document).ready(async function(){
 
         paintIndex = this.value;
         if (paintIndex == -1) {
-            floatSlider.noUiSlider.set([0, 1]);
+            setFloatMinMax(0, 1);
         } else if (paintIndex == 0) {
-            floatSlider.noUiSlider.set([0.06, 0.80]);
+            setFloatMinMax(0.06, 0.80);
         } else {
             const paint = items.weapons[defIndex].paints[paintIndex];
-            floatSlider.noUiSlider.set([paint.min, paint.max]);
+            setFloatMinMax(paint.min, paint.max);
         }
     });
+
+    $('#minFloat').change(function () {
+        let min = parseFloat($(this).val());
+        if (min > 1 || min < 0 || min > parseFloat($('#maxFloat').val())) {
+            min = 0;
+            $('#minFloat').val(min.toFixed(2));
+        }
+        floatSlider.noUiSlider.set([min, null]);
+    });
+
+    $('#maxFloat').change(function () {
+        let max = parseFloat($(this).val());
+        if (max > 1 || max < 0 || max < parseFloat($('#minFloat').val())) {
+            max = 1;
+            $('#maxFloat').val(max.toFixed(2));
+        }
+        floatSlider.noUiSlider.set([null, max]);
+    });
+
+    floatSlider.noUiSlider.on('slide', (values) => {
+        $('#minFloat').val(values[0]);
+        $('#maxFloat').val(values[1]);
+    })
 });
 
 function generateInspectURL(item) {
@@ -365,8 +396,8 @@ async function search() {
 
     const [min, max] = floatSlider.noUiSlider.get();
 
-    params.min = min;
-    params.max = max;
+    params.min = $('#minFloat').val();
+    params.max = $('#maxFloat').val();
 
     const qualitySelection = parseInt($("#qualitySelect").val());
     if (qualitySelection > -1) {
@@ -388,7 +419,7 @@ async function search() {
         .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
         .join('&');
 
-    const data = await fetch(`https://dbapi.csgofloat.com/search?${queryString}`);
+    const data = await fetch(`${basePath}/search?${queryString}`);
     const results = await data.json();
 
     const tableHtml = getTableHtml(results);

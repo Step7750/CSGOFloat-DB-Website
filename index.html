@@ -53,14 +53,21 @@
                     <label>Category</label>
                 </div>
             </div>
-            <div class="divider"></div>
             <div class="row">
                 <div class="col s12" style="padding: 0;">
                     <div id="float-slider"></div>
                 </div>
             </div>
-            <div class="row" style="margin-top: 75px;">
-                <div class="col s12">
+            <div class="row valign-wrapper" style="margin-top: 60px; margin-bottom: 10px;">
+                <div class="input-field col s2 offset-s2">
+                    <input value="0.00" type="number" id="minFloat" step="0.001" max="1.00" min="0.00">
+                    <label>Min</label>
+                </div>
+                <div class="input-field col s2">
+                    <input value="1.00" type="number" id="maxFloat" step="0.001" max="1.00" min="0.00">
+                    <label>Max</label>
+                </div>
+                <div class="col s5" style="height: 100%; margin-top: -15px;">
                     Sort By:
                     <label>
                         <input name="sort" type="radio" checked  value="1"/>
