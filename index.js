@@ -113,6 +113,7 @@ $(document).ready(async function(){
     $("#weaponSelect").formSelect();
     $("#paintSelect").formSelect();
     $("#qualitySelect").formSelect();
+    $("#raritySelect").formSelect();
 
     noUiSlider.create(floatSlider, {
         start: [0, 1],
@@ -146,6 +147,9 @@ $(document).ready(async function(){
 
         floatSlider.noUiSlider.set([0, 1]);
 
+        $("#raritySelect").prop('disabled', false);
+        $("#raritySelect").formSelect();
+
         if (defIndex == -1) {
             $("#paintSelect").prop('disabled', true);
             $("#paintSelect").formSelect('destroy');
@@ -176,6 +180,9 @@ $(document).ready(async function(){
             const paint = items.weapons[defIndex].paints[paintIndex];
             setFloatMinMax(paint.min, paint.max);
         }
+
+        $("#raritySelect").prop('disabled', true);
+        $("#raritySelect").formSelect();
     });
 
     $('#minFloat').change(function () {
@@ -440,6 +447,11 @@ async function search() {
         } else if (qualitySelection === 12) {
             params.souvenir = true;
         }
+    }
+
+    const raritySelection = parseInt($("#raritySelect").val());
+    if (raritySelection > -1 && !$('#raritySelect').prop('disabled')) {
+        params.rarity = raritySelection;
     }
 
     const stickers = getStickers();
