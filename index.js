@@ -151,6 +151,7 @@ $(document).ready(async function(){
         $("#raritySelect").formSelect();
 
         $("#slotImage").hide();
+        $("#slotImage").attr('src', '');
 
         if (defIndex == -1 || items.weapons[defIndex].stickerAmount === 0) {
             $("#slotImageContainer").hide();
