@@ -181,7 +181,7 @@ $(document).ready(async function(){
             setFloatMinMax(paint.min, paint.max);
         }
 
-        $("#raritySelect").prop('disabled', true);
+        $("#raritySelect").prop('disabled', paintIndex != -1);
         $("#raritySelect").formSelect();
     });
 
