@@ -150,6 +150,14 @@ $(document).ready(async function(){
         $("#raritySelect").prop('disabled', false);
         $("#raritySelect").formSelect();
 
+        $("#slotImage").hide();
+
+        if (defIndex == -1 || items.weapons[defIndex].stickerAmount === 0) {
+            $("#slotImageContainer").hide();
+        } else {
+            $("#slotImageContainer").show();
+        }
+
         if (defIndex == -1) {
             $("#paintSelect").prop('disabled', true);
             $("#paintSelect").formSelect('destroy');
@@ -481,6 +489,11 @@ async function search() {
     history.pushState(params, '', '?' + queryString);
 
     searchQuery(queryString);
+}
+
+function toggleWeaponSlots() {
+    $("#slotImage").attr('src', `assets/slots/${defIndex}.png`);
+    $("#slotImage").toggle();
 }
 
 async function searchQuery(query) {
