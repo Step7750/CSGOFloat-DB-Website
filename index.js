@@ -162,6 +162,7 @@ $(document).ready(async function(){
         if (defIndex == -1) {
             $("#paintSelect").prop('disabled', true);
             $("#paintSelect").formSelect('destroy');
+            $("#paintSelect").formSelect();
             return;
         }
 
