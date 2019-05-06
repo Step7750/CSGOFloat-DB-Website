@@ -87,7 +87,7 @@ function addStickerInputs(amt) {
 
         d.find('input').autocomplete({
             data: stickersDropdown,
-            limit: 12,
+            limit: 6,
         });
         d.find('select').formSelect();
     }
