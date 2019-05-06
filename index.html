@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0">
 
     <title>FloatDB - CS:GO Item Database</title>
-    <meta name="description" content="Free, Fast, and Comprehensive Database of over 80 Million CS:GO Skins">
+    <meta name="description" content="Free, Fast, and Comprehensive Database of over 90 Million CS:GO Skins">
     <meta name="keywords" content="csgo, float, api, database, market float, counter-strike: global offensive, cs:go, csgo market, csgo inventory, steam, tradeup, extension, contract">
 
     <script
             src="https://code.jquery.com/jquery-3.4.0.min.js"
             integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg="
             crossorigin="anonymous"></script>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
@@ -25,6 +27,62 @@
     <script src="index.js"></script>
 </head>
 <body>
+
+<div id="infoModal" class="modal">
+    <div class="modal-content">
+        <h4>Info</h4>
+        <p>CSGOFloat now provides a free, fast, and comprehensive database to search our 90+ million skins!</p>
+        <p>This information is collected by Steam inventory crawlers operated by us and by users of our extensions.
+            Please note that private inventory results collected using the extension will appear here.</p>
+        <p>If you encounter any issues or have feature requests, please use the
+            <a href="https://github.com/Step7750/CSGOFloat-DB">GitHub tracker</a>
+            or contact me on <a href="https://steamcommunity.com/id/Step7750">Steam</a>.</p>
+        <p>Items are defined as unique if they have the have the same weapon type, skin type, float, and paint seed; therefore,
+            duplicate items previously given by support are not counted.</p>
+        <h4>Float Value and Paint Seed?</h4>
+        <p>The "float value" of a CS:GO skin determines how much wear it has; the closer to 1, the more wear. Paint seed
+            determines where the wear and skin texture is placed and ranges from 0-999. For example, two Case Hardened items with
+            the same paint seed will have the same texture placement (same blue and gold locations). Therefore, this database
+            can help you find some of the best looking skins with specific attributes in the game.</p>
+        <h4>Extension</h4>
+        <p>The CSGOFloat Checker extension allows you to view the float, paint seed, and rank of items directly on inventory pages and the market!</p>
+        <p>If there is an item not listed here, you can either view the inventory while having our extension, query the
+            inspect link on the main CSGOFloat page, or hope that our bots or someone else finds the item.</p>
+        <h4>API</h4>
+        <p>API Documentation Coming Soon™, this may operate on Valve Time.</p>
+        <p>In the meantime, you can look at AJAX requests on the page, the current rate limit is 120 calls per 2 hours (this may be subject to change).</p>
+        <p>All <code>api.csgofloat.com</code> individual item requests now include a <code>low_rank</code> and <code>high_rank</code>
+            signifying the float rank for that specific skin and category (StatTrak, Souvenir, or Normal) if that item is in the top 1000.
+            Note that individual doppler phases are ranked separately.</p>
+    </div>
+</div>
+
+<ul id="extensionDropdown" class="dropdown-content">
+    <li><a href="https://chrome.google.com/webstore/detail/csgofloat-market-checker/jjicbefpemnphinccgikpdaagjebbnhg?hl=en">Chrome Extension</a></li>
+    <li><a href="https://addons.mozilla.org/en-US/firefox/addon/csgofloat/">Firefox Extension</a></li>
+</ul>
+
+<nav>
+    <div class="nav-wrapper">
+        <a class="brand-logo" href="/">CSGOFloat</a>
+        <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+        <ul class="right hide-on-med-and-down">
+            <!-- Modal Trigger -->
+            <li><a href="#infoModal" class="modal-trigger">Info</a></li>
+            <li><a class="dropdown-trigger" data-target="extensionDropdown">Extension<i class="material-icons right">arrow_drop_down</i></a></li>
+            <li><a href="https://github.com/Step7750/CSGOFloat-DB">GitHub</a></li>
+            <li><a href="https://steamcommunity.com/id/Step7750">Contact</a></li>
+        </ul>
+    </div>
+</nav>
+
+<ul class="sidenav" id="mobile-demo">
+    <li><a href="#infoModal" class="modal-trigger">Info</a></li>
+    <li><a href="https://chrome.google.com/webstore/detail/csgofloat-market-checker/jjicbefpemnphinccgikpdaagjebbnhg?hl=en">Chrome Extension</a></li>
+    <li><a href="https://addons.mozilla.org/en-US/firefox/addon/csgofloat/">Firefox Extension</a></li>
+    <li><a href="https://github.com/Step7750/CSGOFloat-DB">GitHub</a></li>
+    <li><a href="https://steamcommunity.com/id/Step7750">Contact</a></li>
+</ul>
     <div style="text-align: center">
         <a class="banner" href="/">
             <img src="assets/logo.png" height="100" class="logo">

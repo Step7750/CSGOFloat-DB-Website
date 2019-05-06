@@ -100,6 +100,10 @@ function setFloatMinMax(min, max) {
 }
 
 $(document).ready(async function(){
+    $(".dropdown-trigger").dropdown();
+    $('.sidenav').sidenav();
+    $('#infoModal').modal();
+
     floatSlider = document.getElementById('float-slider');
     const data = await fetch(`${basePath}/items`);
     items = await data.json();
@@ -163,6 +167,7 @@ $(document).ready(async function(){
             $("#paintSelect").prop('disabled', true);
             $("#paintSelect").formSelect('destroy');
             $("#paintSelect").formSelect();
+            addStickerInputs(5);
             return;
         }
 
@@ -502,8 +507,21 @@ async function searchQuery(query) {
     $("#searchLoading").show();
     $("#searchButton").addClass('disabled');
 
-    const data = await fetch(`${basePath}/search?${query}`);
-    const results = await data.json();
+    let results;
+    
+    try {
+        const data = await fetch(`${basePath}/search?${query}`);
+        results = await data.json();
+
+        if (results.error) {
+            throw results.error;
+        }
+    } catch (e) {
+        M.toast({html: `Something went wrong while searching :(`});
+        $("#searchLoading").hide();
+        $("#searchButton").removeClass('disabled');
+        return;
+    }
 
     const tableHtml = getTableHtml(results);
     $("#results-body").html(tableHtml);

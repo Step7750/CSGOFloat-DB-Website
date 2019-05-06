@@ -1,5 +1,7 @@
 /*
      Overwrite the default Materialize Light theme
+
+     Don't crucify me for the !important
   */
 body, html {
     background-color: #191a1a !important;
@@ -45,6 +47,22 @@ tr {
     white-space: pre;
 }
 
+nav {
+    background-color: #287168;
+}
+
+.nav-wrapper {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.modal-content {
+    background-color: #191a1a !important;
+}
+
+.brand-logo {
+    font-size: 1.8rem !important;
+}
 
 .logo {
     border-radius: 20px;
