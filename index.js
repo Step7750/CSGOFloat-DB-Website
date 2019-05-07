@@ -149,7 +149,7 @@ $(document).ready(async function(){
         paintIndex = undefined;
         defIndex = this.value;
 
-        floatSlider.noUiSlider.set([0, 1]);
+        setFloatMinMax(0, 1);
 
         $("#raritySelect").prop('disabled', false);
         $("#raritySelect").formSelect();
