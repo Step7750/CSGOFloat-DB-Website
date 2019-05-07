@@ -518,10 +518,8 @@ async function searchQuery(query) {
         }
     } catch (e) {
         M.toast({html: `Something went wrong while searching :(`});
-        if (e.error) {
-            M.toast({html: e.error.toString()});
-        }
-        
+        M.toast({html: e.toString()});
+
         $("#searchLoading").hide();
         $("#searchButton").removeClass('disabled');
         return;
