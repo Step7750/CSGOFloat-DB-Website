@@ -3,6 +3,50 @@ const basePath = 'https://dbapi.csgofloat.com';
 let defIndex, paintIndex, floatSlider;
 let items;
 
+const numberWithCommas = (x) => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+class Counter {
+    constructor(elem) {
+        this.elem = elem;
+    }
+
+    set(res) {
+        this.newCount = res.count + ((Date.now()/1000-res.lastUpdate) * res.rate);
+        this.newRate = res.rate;
+
+        if (!this.rate) {
+            // Initialize
+            this.lastTime = performance.now();
+            requestAnimationFrame(this.step.bind(this));
+        } else {
+            // Account for drift
+            this.newRate += (this.newCount-this.count)/30;
+            if (this.newRate < 0) {
+                this.newRate -= (this.newCount-this.count)/30;
+            }
+        }
+    }
+
+    step(ts) {
+        const durationMs = ts-this.lastTime;
+        this.lastTime = ts;
+        this.rate = this.newRate;
+
+        if (!this.count) {
+            this.count = this.newCount;
+        }
+
+        this.count += (durationMs/1000) * this.rate;
+
+        const formattedCount = numberWithCommas(Math.floor(this.count));
+        if (this.elem.textContent !== formattedCount) {
+            this.elem.textContent = formattedCount;
+        }
+
+        requestAnimationFrame(this.step.bind(this));
+    }
+}
+
 // https://stackoverflow.com/a/46431916
 const groupBy = (items, key) => items.reduce((result, item) => ({
         ...result,
@@ -99,7 +143,27 @@ function setFloatMinMax(min, max) {
     $('#maxFloat').val(max.toFixed(2));
 }
 
-$(document).ready(async function(){
+$(document).ready(async function() {
+    const counter = new Counter(document.getElementById('itemCounter'));
+    async function fetchCount() {
+        try {
+            const res = await fetch(`${basePath}/count`);
+            const data = await res.json();
+            if (data.rate) {
+                counter.set(data);
+            } else {
+                document.getElementById('itemCounter').innerText = numberWithCommas(data.count);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    setInterval(async () => {
+        fetchCount();
+    }, 30000);
+    fetchCount();
+
     $(".dropdown-trigger").dropdown();
     $('.sidenav').sidenav();
     $('#infoModal').modal();
