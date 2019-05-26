@@ -4,6 +4,7 @@ let defIndex, paintIndex, floatSlider;
 let items;
 
 const numberWithCommas = (x) => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+const wait = (ms) => new Promise((resolve) => setTimeout(() => resolve(), ms));
 
 class Counter {
     constructor(elem) {
@@ -11,30 +12,23 @@ class Counter {
     }
 
     set(res) {
-        this.newCount = res.count + ((Date.now()/1000-res.lastUpdate) * res.rate);
-        this.newRate = res.rate;
+        const secondsSincePast = Date.now()/1000-res.lastUpdate;
 
-        if (!this.rate) {
+        this.count = res.count - res.rate*res.updateInterval + secondsSincePast * res.rate;
+        this.finalCount = res.count + res.rate; // Add additional one second to account for network request delay for update
+        this.rate = res.rate;
+
+        if (!this.lastTime) {
             // Initialize
             this.lastTime = performance.now();
-            requestAnimationFrame(this.step.bind(this));
-        } else {
-            // Account for drift
-            this.newRate += (this.newCount-this.count)/30;
-            if (this.newRate < 0) {
-                this.newRate -= (this.newCount-this.count)/30;
-            }
         }
+
+        requestAnimationFrame(this.step.bind(this));
     }
 
     step(ts) {
         const durationMs = ts-this.lastTime;
         this.lastTime = ts;
-        this.rate = this.newRate;
-
-        if (!this.count) {
-            this.count = this.newCount;
-        }
 
         this.count += (durationMs/1000) * this.rate;
 
@@ -43,7 +37,9 @@ class Counter {
             this.elem.textContent = formattedCount;
         }
 
-        requestAnimationFrame(this.step.bind(this));
+        if (this.count < this.finalCount) {
+            requestAnimationFrame(this.step.bind(this));
+        }
     }
 }
 
@@ -154,14 +150,20 @@ $(document).ready(async function() {
             } else {
                 document.getElementById('itemCounter').innerText = numberWithCommas(data.count);
             }
+
+            const waitPeriod = (data.updateInterval - (Date.now()/1000-data.lastUpdate))*1000;
+
+            if (waitPeriod < 1000) {
+                await wait(500);
+            }
+
+            setTimeout(() => {
+                fetchCount();
+            }, waitPeriod);
         } catch (e) {
             console.error(e);
         }
     }
-
-    setInterval(async () => {
-        fetchCount();
-    }, 30000);
     fetchCount();
 
     $(".dropdown-trigger").dropdown();
