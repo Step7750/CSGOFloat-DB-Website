@@ -99,10 +99,23 @@ function addStickerInputs(amt) {
     const parent = $("#stickers");
     parent.empty();
 
-    const stickersDropdown = {};
+    const stickersDropdown = [];
     for (const stickerIndex of Object.keys(items.stickers)) {
-        stickersDropdown[items.stickers[stickerIndex]] = null;
+        stickersDropdown.push({key: items.stickers[stickerIndex]});
     }
+
+    const fuse = new Fuse(stickersDropdown, {
+        shouldSort: true,
+        tokenize: true,
+        threshold: 0.001,
+        location: 0,
+        distance: 10000,
+        maxPatternLength: 32,
+        minMatchCharLength: 1,
+        keys: [
+            "key"
+        ]
+    });
 
     for (let i = 0; i < amt; i++) {
         let d = `
@@ -125,10 +138,45 @@ function addStickerInputs(amt) {
 
         parent.append(d);
 
-        d.find('input').autocomplete({
+        const auto = d.find('input').autocomplete({
             data: stickersDropdown,
             limit: 6,
-        });
+        })[0].M_Autocomplete;
+
+        // Gotta love hacky solutions
+        // Uses Fuse instead of regular matching for fuzzy search
+        auto.__proto__._renderDropdown = function(data, searchVal) {
+            this._resetAutocomplete();
+
+            var matchingData = [];
+
+            for (const result of fuse.search(searchVal)) {
+                if (this.count >= this.options.limit) {
+                    break;
+                }
+
+                matchingData.push({
+                    data: null,
+                    key: result.key
+                });
+
+                this.count++;
+            }
+
+            // Render
+            for (var i = 0; i < matchingData.length; i++) {
+                var _entry = matchingData[i];
+                var $autocompleteOption = $('<li></li>');
+                if (!!_entry.data) {
+                    $autocompleteOption.append("<img src=\"" + _entry.data + "\" class=\"right circle\"><span>" + _entry.key + "</span>");
+                } else {
+                    $autocompleteOption.append('<span>' + _entry.key + '</span>');
+                }
+
+                $(this.container).append($autocompleteOption);
+            }
+        };
+
         d.find('select').formSelect();
     }
 }
