@@ -107,9 +107,9 @@ function addStickerInputs(amt) {
     const fuse = new Fuse(stickersDropdown, {
         shouldSort: true,
         tokenize: true,
-        threshold: 0.001,
+        threshold: 0.2,
         location: 0,
-        distance: 10000,
+        distance: 1000,
         maxPatternLength: 32,
         minMatchCharLength: 1,
         keys: [
