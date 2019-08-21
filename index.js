@@ -516,13 +516,17 @@ function getTableHtml(rows) {
                         ${(row.stickers || []).length > 0 ? "Show" : ""}
                         </a>
                     </td>
-                    <td><a href="${generateLink(row)}" target="_blank">${row.s === "0" ? "Market" : "Profile"}</a></td>
+                    <td><a href="${generateLink(row)}" class="tooltipped" data-position="top" data-tooltip="${getRelativeTimeChange(Date.parse(row.updated)).join('\n')}" target="_blank">${row.s === "0" ? "Market" : "Profile"}</a></td>
                     <td><a href="${generateInspectURL(row)}">Inspect</a></td>
                 </tr>
                 `
     }
 
     return html;
+}
+
+function getRelativeTimeChange(time) {
+    return ['Last Changed', `${Math.floor((Date.now()-time)/86000000)} days ago`];
 }
 
 function getStickers() {
