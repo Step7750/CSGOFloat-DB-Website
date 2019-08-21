@@ -487,7 +487,7 @@ const rarities = {
 function getStickerNames(stickers) {
     const names = [];
     for (const sticker of stickers || []) {
-        names.push(`${items.stickers[sticker.i]} (${Math.round((sticker.w || 0) * 100)}%) - Slot ${sticker.s+1}`);
+        names.push(`${items.stickers[sticker.i]} - ${Math.round((sticker.w || 0) * 100)}% - Slot ${sticker.s+1}`);
     }
     return names;
 }
