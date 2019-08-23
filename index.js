@@ -492,6 +492,39 @@ function getStickerNames(stickers) {
     return names;
 }
 
+
+const personaStateToClassMap = {
+    0: 'offline', // Offline
+    1: 'online', // Online
+    2: 'online', // Busy
+    3: 'online', // Away
+    4: 'online', // Snooze
+    5: 'online', // Looking to trade
+    6: 'online', // Looking to play
+    100: 'in-game', // In-game, custom persona state
+};
+
+function getBasicLinkHtml(row, linkText) {
+    return `<a href="${generateLink(row)}"
+                class="tooltipped"
+                data-position="top"
+                data-tooltip="${getRelativeTimeChange(Date.parse(row.updated)).join('\n')}"
+                target="_blank"
+                style="line-height: 40px;">
+                ${linkText}
+            </a>`
+}
+
+function getProfileHtml(row) {
+    return row.avatar ? `<a href="${generateLink(row)}"
+                class="tooltipped playerAvatar ${personaStateToClassMap[row.personaState]}"
+                data-position="top"
+                data-tooltip="${getRelativeTimeChange(Date.parse(row.updated)).join('\n')}"
+                target="_blank">
+                <img src="${row.avatar}">
+            </a>` : getBasicLinkHtml(row, 'Profile');
+}
+
 function getTableHtml(rows) {
     let html = '';
     for (let rank = 0; rank < rows.length; rank++) {
@@ -512,11 +545,14 @@ function getTableHtml(rows) {
                     </td>
                     <td>${row.floatvalue.toFixed(14)}</td>
                     <td>${row.paintseed}</td>
-                    <td><a class="${hasStickers ? "tooltipped" : ""}" data-position="top" data-tooltip="${getStickerNames(row.stickers).join('\n')}">
+                    <td>
+                        <a class="${hasStickers ? "tooltipped" : ""}"
+                            data-position="top"
+                            data-tooltip="${getStickerNames(row.stickers).join('\n')}">
                         ${(row.stickers || []).length > 0 ? "Show" : ""}
                         </a>
                     </td>
-                    <td><a href="${generateLink(row)}" class="tooltipped" data-position="top" data-tooltip="${getRelativeTimeChange(Date.parse(row.updated)).join('\n')}" target="_blank">${row.s === "0" ? "Market" : "Profile"}</a></td>
+                    <td>${row.s === "0" ? getBasicLinkHtml(row, 'Market') : getProfileHtml(row)}</a></td>
                     <td><a href="${generateInspectURL(row)}">Inspect</a></td>
                 </tr>
                 `
