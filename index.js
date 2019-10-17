@@ -1,6 +1,6 @@
 const basePath = 'https://dbapi.csgofloat.com';
 
-let defIndex, paintIndex, floatSlider;
+let defIndex, paintIndex, floatSlider, startIndex = 0, lastRowCount, isFetching;
 let items;
 
 const numberWithCommas = (x) => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -338,7 +338,7 @@ $(document).ready(async function() {
     });
 
     if (location.search) {
-        searchQuery(location.search.substring(1));
+        searchQuery(location.search.substring(1), false, 0);
     }
 });
 
@@ -525,7 +525,7 @@ function getProfileHtml(row) {
             </a>` : getBasicLinkHtml(row, 'Profile');
 }
 
-function getTableHtml(rows) {
+function getTableHtml(rows, startIndex) {
     let html = '';
     for (let rank = 0; rank < rows.length; rank++) {
         const row = rows[rank];
@@ -535,7 +535,7 @@ function getTableHtml(rows) {
 
         html += `
                 <tr>
-                    <td>${rank+1}</td>
+                    <td>${startIndex + rank + 1}</td>
                     <td>${row.a}</td>
                     <td>${getItemName(row.defIndex, row.paintIndex, row.floatvalue, row.stattrak, row.souvenir, true)}</td>
                     <td>
@@ -595,7 +595,14 @@ function getStickers() {
     return stickers;
 }
 
-async function search() {
+function serializeQuery(params, filterFn) {
+    return Object.keys(params)
+        .filter(filterFn || (() => true))
+        .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
+        .join('&');
+}
+
+async function search(scroll, index) {
     let params = {
         defIndex: defIndex == -1 ? '' : defIndex,
         paintIndex: paintIndex == -1 ? '' : paintIndex,
@@ -643,13 +650,10 @@ async function search() {
         return result;
     }, {});
 
-    const queryString = Object.keys(params)
-        .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key]))
-        .join('&');
+    // Don't include `start` in the URL since we don't want the user to be jumped to that on a refresh
+    history.pushState(params, '', '?' + serializeQuery(params, (key) => key !== 'start'));
 
-    history.pushState(params, '', '?' + queryString);
-
-    searchQuery(queryString);
+    return searchQuery(serializeQuery(params), scroll, index);
 }
 
 function toggleWeaponSlots() {
@@ -657,14 +661,21 @@ function toggleWeaponSlots() {
     $("#slotImage").toggle();
 }
 
-async function searchQuery(query) {
-    $("#searchLoading").show();
+async function searchQuery(query, scroll, index) {
+    if (isFetching) return Promise.reject("Already fetching");
+
+    isFetching = true;
+    startIndex = index || 0;
+
+    const loadingBar = scroll ? $("#scrollLoading") : $("#searchLoading");
+
+    loadingBar.show();
     $("#searchButton").addClass('disabled');
 
     let results;
     
     try {
-        const data = await fetch(`${basePath}/search?${query}`);
+        const data = await fetch(`${basePath}/search?${query}&start=${startIndex}`);
         results = await data.json();
 
         if (results.error) {
@@ -676,11 +687,25 @@ async function searchQuery(query) {
 
         $("#searchLoading").hide();
         $("#searchButton").removeClass('disabled');
-        return;
+
+        isFetching = false;
+        return Promise.reject(e);
     }
 
-    const tableHtml = getTableHtml(results);
-    $("#results-body").html(tableHtml);
+    lastRowCount = results.length;
+
+    // Destroy all current tooltips
+    $("#results-body").find(".tooltipped").each(function () {
+        M.Tooltip.getInstance(this).destroy();
+    });
+
+    const tableHtml = getTableHtml(results, startIndex);
+
+    if (scroll) {
+        $("#results-body").append(tableHtml);
+    } else {
+        $("#results-body").html(tableHtml);
+    }
 
 
     $("#results-body").find(".tooltipped").each(function () {
@@ -688,10 +713,30 @@ async function searchQuery(query) {
     });
 
     $("#results").show();
-    $("#searchLoading").hide();
+    loadingBar.hide();
     $("#searchButton").removeClass('disabled');
 
-    $('html, body').animate({
-        scrollTop: $("#results").offset().top
-    }, 500);
+    if (!scroll) {
+        $('html, body').animate({
+            scrollTop: $("#results").offset().top
+        }, 500);
+    }
+
+    isFetching = false;
 }
+
+window.onscroll = () => {
+    // Scroll infinite only on desktop mode
+    if (window.innerWidth >= 1000 && (window.innerHeight + window.scrollY) >= document.body.scrollHeight - 1000
+        && lastRowCount /* ensure initialized, prevents going too far as well */) {
+        startIndex += lastRowCount;
+
+        // Hard limit, enforced server side as well
+        if (startIndex >= 5000) return;
+
+        searchQuery(location.search.substring(1), true, startIndex).catch(() => {
+            // Restore index state
+            startIndex -= lastRowCount;
+        });
+    }
+};

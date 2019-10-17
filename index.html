@@ -104,6 +104,9 @@
         <div style="font-size: 25px; font-family: Monospaced">
             <span id="itemCounter"></span> Skins
         </div>
+        <div style="margin: 10px 0 10px 0">
+            <span style="background-color: dimgrey; border-radius: 5px; padding: 5px;">New!</span><span> Infinite Scrolling on Desktop!</span>
+        </div>
 
         <div id="searchForm">
             <div class="row">
@@ -202,7 +205,7 @@
                     <label for="sticker4-input">Sticker</label>
                 </div>
             </div>
-            <a class="waves-effect waves-light btn-large" href="javascript:search()" id="searchButton">Search</a>
+            <a class="waves-effect waves-light btn-large" href="javascript:search(false)" id="searchButton">Search</a>
             <div class="progress" id="searchLoading" style="display: none">
                 <div class="indeterminate"></div>
             </div>
@@ -225,6 +228,9 @@
 
                 <tbody id="results-body"></tbody>
             </table>
+            <div class="progress" id="scrollLoading" style="display: none">
+                <div class="indeterminate"></div>
+            </div>
         </div>
     </div>
 </body>
