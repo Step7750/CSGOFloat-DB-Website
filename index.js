@@ -219,8 +219,13 @@ $(document).ready(async function() {
     $('#infoModal').modal();
 
     floatSlider = document.getElementById('float-slider');
-    const data = await fetch(`${basePath}/items`);
-    items = await data.json();
+    
+    try {
+        const data = await fetch(`${basePath}/items`);
+        items = await data.json();
+    } catch (e) {
+        document.getElementById('counterWrapper').innerHTML = `Server Maintenance, We'll Be Back Soon!`;
+    }
 
     const weaponsDropdown = {};
     for (const defIndex of Object.keys(items.weapons)) {
