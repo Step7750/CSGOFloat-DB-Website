@@ -669,8 +669,8 @@ function toggleWeaponSlots() {
 function getToken() {
     return new Promise((resolve, reject) => {
         grecaptcha.ready(function() {
-            grecaptcha.execute('6LdLz8QUAAAAAJyPFMMjrwzUX2smVEVD2OdbcKm3', {action: 'db-query'}).then(function(token) {
-                resolve(token)
+            grecaptcha.execute('6LdLz8QUAAAAAJyPFMMjrwzUX2smVEVD2OdbcKm3', {action: 'db_query'}).then(function(token) {
+                resolve(token);
             }).catch(err => {
                 reject(err);
             });
