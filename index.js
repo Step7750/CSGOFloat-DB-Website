@@ -666,11 +666,41 @@ function toggleWeaponSlots() {
     $("#slotImage").toggle();
 }
 
+function getToken() {
+    return new Promise((resolve, reject) => {
+        grecaptcha.ready(function() {
+            grecaptcha.execute('6LdLz8QUAAAAAJyPFMMjrwzUX2smVEVD2OdbcKm3', {action: 'db-query'}).then(function(token) {
+                resolve(token)
+            }).catch(err => {
+                reject(err);
+            });
+        });
+    });
+}
+
+function resetFetchingStatus() {
+    $("#searchLoading").hide();
+    $("#searchButton").removeClass('disabled');
+    isFetching = false;
+}
+
 async function searchQuery(query, scroll, index) {
     if (isFetching) return Promise.reject("Already fetching");
 
     isFetching = true;
     startIndex = index || 0;
+
+    let token;
+
+    try {
+        token = await getToken();
+    } catch (e) {
+        M.toast({html: `Failed to verify recaptcha, please try disabling ad-blockers`});
+        M.toast({html: e.toString()});
+        resetFetchingStatus();
+
+        return Promise.reject(e);
+    }
 
     const loadingBar = scroll ? $("#scrollLoading") : $("#searchLoading");
 
@@ -680,7 +710,7 @@ async function searchQuery(query, scroll, index) {
     let results;
     
     try {
-        const data = await fetch(`${basePath}/search?${query}&start=${startIndex}`);
+        const data = await fetch(`${basePath}/search?${query}&start=${startIndex}&token=${token}`);
         results = await data.json();
 
         if (results.error) {
@@ -689,11 +719,8 @@ async function searchQuery(query, scroll, index) {
     } catch (e) {
         M.toast({html: `Something went wrong while searching :(`});
         M.toast({html: e.toString()});
+        resetFetchingStatus();
 
-        $("#searchLoading").hide();
-        $("#searchButton").removeClass('disabled');
-
-        isFetching = false;
         return Promise.reject(e);
     }
 
