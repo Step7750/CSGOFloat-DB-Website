@@ -671,7 +671,7 @@ function getToken() {
         grecaptcha.ready(function() {
             grecaptcha.execute('6LdLz8QUAAAAAJyPFMMjrwzUX2smVEVD2OdbcKm3', {action: 'db_query'}).then(function(token) {
                 resolve(token);
-            }).catch(err => {
+            }, err => {
                 reject(err);
             });
         });
